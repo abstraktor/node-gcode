@@ -107,9 +107,9 @@ Interpreter.prototype._handle_line = function(line) {
 	}.bind(this));
 }
 
-Interpreter.prototype.interpretFile = function(file, callback) {
+Interpreter.prototype.interpretStream = function(stream, callback) {
 	var results = [];
-	fs.createReadStream(file)
+	stream
 	.pipe(new GCodeScrubber())
 	.pipe(byline())
 	.pipe(new GCodeParser())
@@ -122,6 +122,20 @@ Interpreter.prototype.interpretFile = function(file, callback) {
             callback.bind(this)(null, results);
         }
     }.bind(this));
+}
+
+Interpreter.prototype.interpretFile = function(file, callback) {
+	return this.interpretStream(fs.createReadStream(file), callback);
+}
+
+Interpreter.prototype.interpretString = function(gcode, callback) {
+	var Readable = require('stream').Readable
+
+	var stream = new Readable
+	stream.push(gcode)
+	stream.push(null) 
+
+	return this.interpretStream(stream, callback);
 }
 
 var parseFile = function(file, callback) {

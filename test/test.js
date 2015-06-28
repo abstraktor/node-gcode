@@ -58,6 +58,18 @@ describe('G-Code Files', function(done) {
                 done();   
             });
 		});
-	});
 
+		it('Should call the interpretFile callback at the end of interpreting a string.', function(done) {
+			var MyGCodeRunner = function() {
+			    gcode.Interpreter.call(this);
+			    this.attribute = "Test Attribute";
+            }
+			util.inherits(MyGCodeRunner, gcode.Interpreter)
+			runner = new MyGCodeRunner();
+			runner.interpretString('G0 X 1.0 Y 2.0 Z 3.0', function(err, result) {
+                expect(this.attribute).to.equal("Test Attribute");
+                done();   
+            });
+		});
+	});
 });
