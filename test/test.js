@@ -27,15 +27,15 @@ describe('G-Code Files', function(done) {
 		it('Should call parser functions for GX.Y functions.', function(done) {
 
 			var MyGCodeRunner = function() {
-			    gcode.Interpreter.call(this);
+				gcode.Interpreter.call(this);
 			}
 			util.inherits(MyGCodeRunner, gcode.Interpreter)
 
 			MyGCodeRunner.prototype.G38_2 = function(args) {
 				args.X.should.equal(1);
-			    args.Y.should.equal(2);
-			    args.Z.should.equal(3);
-			    done();
+				args.Y.should.equal(2);
+				args.Z.should.equal(3);
+				done();
 			}
 
 			runner = new MyGCodeRunner();
@@ -44,32 +44,52 @@ describe('G-Code Files', function(done) {
 		});
 	});
 
-
 	describe('Complete Callback', function(done) {
 		it('Should call the interpretFile callback at the end of interpreting the file.', function(done) {
 			var MyGCodeRunner = function() {
-			    gcode.Interpreter.call(this);
-			    this.attribute = "Test Attribute";
-            }
+				gcode.Interpreter.call(this);
+				this.attribute = "Test Attribute";
+			}
 			util.inherits(MyGCodeRunner, gcode.Interpreter)
 			runner = new MyGCodeRunner();
 			runner.interpretFile('test/spaces.nc', function(err, result) {
-                expect(this.attribute).to.equal("Test Attribute");
-                done();   
-            });
+				expect(this.attribute).to.equal("Test Attribute");
+				done();   
+			});
 		});
 
 		it('Should call the interpretFile callback at the end of interpreting a string.', function(done) {
 			var MyGCodeRunner = function() {
-			    gcode.Interpreter.call(this);
-			    this.attribute = "Test Attribute";
-            }
+				gcode.Interpreter.call(this);
+				this.attribute = "Test Attribute";
+			}
 			util.inherits(MyGCodeRunner, gcode.Interpreter)
 			runner = new MyGCodeRunner();
 			runner.interpretString('G0 X 1.0 Y 2.0 Z 3.0', function(err, result) {
-                expect(this.attribute).to.equal("Test Attribute");
-                done();   
-            });
+				expect(this.attribute).to.equal("Test Attribute");
+				done();   
+			});
+		});
+	});
+
+	describe("Parser", function(){
+		it("calls G0", function(){
+			var MyGCodeRunner = function(done) {
+				gcode.Interpreter.call(this);
+				this.attribute = "Test Attribute";
+			}
+
+			var G0_was_called = false;
+			MyGCodeRunner.prototype.G0 = function(){
+				G0_was_called = true;
+			}
+
+			util.inherits(MyGCodeRunner, gcode.Interpreter)
+			runner = new MyGCodeRunner();
+			runner.interpretString('G0 X 1.0 Y 2.0 Z 3.0', function(err, result) {
+				G0_was_called.should.equal(true);
+				done();
+			});
 		});
 	});
 });

@@ -15,17 +15,26 @@ start
   = line
 
 line 
-  = num:line_number? words:word* {
+  = num:line_number? words:word* comment? {
       return {'N':num, 'words':words}
 }
 
-word = word:letter value:real_value { return [word, value]; }
+word
+  = word:letter value:real_value { return [word, value]; }
+  / comment
 
 line_number
   = "N" integer
 
 real_value 
   = factor1
+
+comment
+  = siemens_comment
+  / mach3_comment
+
+siemens_comment = ";" (![\r\n] .)*
+mach3_comment = "(" (![\r\n] .)* ")"
 
 integer
   = [0-9]+ { return parseInt(text()); }

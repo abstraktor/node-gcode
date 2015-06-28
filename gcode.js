@@ -36,6 +36,7 @@ GCodeScrubber.prototype._transform = function(s, enc, done) {
 					} else {
 						// ERROR
 					}
+					break;
 				default:
 					if(this.in_comment) { keep_result = false;}
 					break;
